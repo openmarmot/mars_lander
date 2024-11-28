@@ -74,6 +74,19 @@ function drawGround() {
     //ctx.fillRect(0, ground.y, canvas.width, ground.height);
 }
 
+function radiansToDegreesNormalized(radians) {
+    // Convert radians to degrees
+    let degrees = radians * (180 / Math.PI);
+    
+    // Normalize the angle to be between 0 and 360
+    degrees = degrees % 360;
+    if (degrees < 0) {
+        degrees += 360;  // Handle negative angles by adding 360
+    }
+    
+    return degrees;
+}
+
 function update(currentTime) {
     if (!gameOver) {
         if (lastTime === 0) lastTime = currentTime;  // First frame
@@ -87,7 +100,7 @@ function update(currentTime) {
             lander.rotation -= lander.rotationSpeed * deltaTime;
         }
 
-        lander.isThrusting = keys[' '] && lander.fuel > 0;
+        lander.isThrusting = keys['w'] && lander.fuel > 0;
         if (lander.isThrusting) {
             // Thrust in the direction the lander is facing
             lander.speedX -= Math.sin(lander.rotation) * lander.thrust * deltaTime;
@@ -124,12 +137,12 @@ function update(currentTime) {
         // Collision detection
         if (lander.y + lander.height >= ground.y) {
             gameOver=true
-            if (lander.speedY > 20) { // Too fast for safe landing
+            if (lander.speedY > 20 || lander.speedX>10) { // Too fast for safe landing
                 crashed = true;
                 crash_message='Speed exceeded structural limits.'
             }
-            angle=Math.round(lander.rotation * (180 / Math.PI))
-            if (angle>5 || angle<-5){
+            angle=radiansToDegreesNormalized(lander.rotation)
+            if (angle>5 && angle<355){
                 crashed = true
                 crash_message+=' Angle exceeded limits'
             }
@@ -153,7 +166,7 @@ function render() {
     ctx.fillText(`Altitude: ${-(Math.round(lander.y )-540)}`, 10, textY+=15);
     ctx.fillText(`Vertical Speed: ${Math.round(lander.speedY)}`, 10, textY+=15);
     ctx.fillText(`Horizontal Speed: ${Math.round(lander.speedX)}`, 10, textY+=15);
-    ctx.fillText(`Angle: ${Math.round(lander.rotation * (180 / Math.PI))}`, 10, textY+=15);
+    ctx.fillText(`Angle: ${radiansToDegreesNormalized(lander.rotation)}`, 10, textY+=15);
     //ctx.fillText(`radians: ${lander.rotation}`, 10, textY+=15);
     //ctx.fillText(`x: ${lander.x}`, 10, textY+=15);
     //ctx.fillText(`y: ${lander.y}`, 10, textY+=15);
