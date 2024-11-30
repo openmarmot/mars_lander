@@ -1,0 +1,8 @@
+Mars Lander - Change Log 
+
+----------------------------------
+Nov 30 2024
+- horizontal speed max for landing is now in both directions
+- added more detailed crash data messages
+- added github actions so the game self deploys
+- updated readme 

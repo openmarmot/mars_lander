@@ -31,7 +31,7 @@ let ground = {
 // Game state
 let gameOver = false;
 let crashed=false;
-let crash_message=''
+let crash_data=[]
 let lastTime = 0; // To keep track of the last update time
 
 function resetGame() {
@@ -137,14 +137,18 @@ function update(currentTime) {
         // Collision detection
         if (lander.y + lander.height >= ground.y) {
             gameOver=true
-            if (lander.speedY > 20 || lander.speedX>10) { // Too fast for safe landing
+            if (lander.speedY > 20) { // Too fast for safe landing
                 crashed = true;
-                crash_message='Speed exceeded structural limits.'
+                crash_data.push('Vertical speed exceeded 20.')
+            }
+            if (lander.speedX>10 || lander.speedX<-10) { // Too fast for safe landing
+                crashed = true;
+                crash_data.push('Horizontal speed exceeded 10.')
             }
             angle=radiansToDegreesNormalized(lander.rotation)
             if (angle>5 && angle<355){
                 crashed = true
-                crash_message+=' Angle exceeded limits'
+                crash_data.push(' Angle exceeded 5 degrees.')
             }
 
             restartButton.style.display = 'block'; // Show restart button on game over
@@ -175,7 +179,10 @@ function render() {
 
         if (crashed) {
             ctx.fillText(`.. poorly`, 10, textY+=15);
-            ctx.fillText(crash_message, 10, textY+=15);
+            for (let element of crash_data) {
+                ctx.fillText(element, 10, textY+=15);
+            }
+           
         }
     }
 }
